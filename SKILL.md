@@ -39,6 +39,14 @@ count. A model only labels what happens at measured moments.
 | Colour | k-means on the exact still (`deep_look.py`) | measured hex palette |
 | Truth check | contact sheets (`sheet.py`) viewed by Claude | catches mislabels before they become rules |
 
+## One command (UNTESTED as a whole)
+
+`python S/ree_run.py start --pack P --creator "Name" <urls...>` runs steps 1 to 4 (download, change points,
+transcription, loudness, sheets) with the slow parts in parallel, then stops for the agent to label.
+After `label_sheets.py check` passes, `python S/ree_run.py finish --pack P --creator "Name"` runs merge, stats,
+patterns, look, the fast sound pass and the report. Every step it calls is tested; the chain itself has not run
+end to end yet. If a step fails, run that step by hand as below.
+
 ## Pipeline
 
 Paths below: `S` = this skill's `scripts/`, `P` = the style pack folder. Run Python with `-I` when it reads
