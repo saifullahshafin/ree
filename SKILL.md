@@ -32,7 +32,7 @@ count. A model only labels what happens at measured moments.
 |---|---|---|
 | Change points | ffmpeg `scdet` + `cuts.py` (threshold 3) | exact times of every visual change, including small pop-ups |
 | Speech | Parakeet word timings (ARM VM) | exact words, for triggers and talk beats |
-| Labels (free default) | Claude views contact sheets of the stills at each change point (`sheet.py`), in batches | what changed, layout, graphic kind, on-screen text, why |
+| Labels (free default) | the agent reads `label_sheets.py` sheets: before/after frames, motion strip, spectrogram strip per change point | what changed, layout, graphic kind, motion, sound, on-screen text, why |
 | Labels (paid option, ask first) | Gemini 3.1 Pro via Vertex, YouTube URL + exact stills per change point (`watch.py`) | the same plus motion and sound heard; about $0.31 per 150 s window |
 | Motion specs (free default) | frame strips at 10 fps around an element (`ffmpeg ... -vf fps=10,tile`) read by Claude | durations by frame count, easing, positions |
 | Motion specs (paid option, ask first) | Gemini at 10 fps, high media resolution (`deep_look.py`) | the same, written as a spec |
@@ -51,11 +51,21 @@ downloaded files.
    Word list JSON into `P/data/transcripts/<id>.json`. Check the word count and that the last word ends near the duration.
 3. **Measure cuts** (laptop): `ffmpeg -i v.mp4 -an -vf "scdet=threshold=5,metadata=mode=print:file=<id>_scdet.txt" -f null -`,
    then `python S/cuts.py <id>_scdet.txt 10 <id>_cuts.json` (hard cuts) and `... 3 <id>_cuts3.json` (all change points).
-4. **Pilot.** `python S/watch.py --id <id> --video <mp4> --cuts <id>_cuts3.json --duration <s> --out P/raw_v2 --transcript <t.json> --only 1`.
-   Then `python S/sheet.py <mp4> P/verify/pilot.jpg --events P/raw_v2/<id>_00150.json --sample 12 --offset 0.4`
-   and LOOK at the sheet against the printed labels. Fix the prompt before scaling. Never skip this.
-5. **Pass 1, all videos**, same command without `--only` (3 parallel windows per video).
-6. **Merge**: `python S/merge.py --raw P/raw_v2 --id <id> --transcript <t.json> --out P/events/<id>.json`.
+4. **Label every change point (free default).** Run sound step 8b first if you can, so sound strips use the
+   music+SFX stem instead of the voice-heavy mix. Then
+   `python S/label_sheets.py make --id <id> --video <mp4> --cuts <id>_cuts3.json --transcript <t.json> --out P [--audio <no_vocals.wav>]`
+   writes one sheet per 60 s window: for each change point a BEFORE | AFTER pair, a 6-frame motion strip
+   (-0.3 to +1 s) and a spectrogram strip (-1 to +1 s, red line = the change), plus the transcript and a
+   pre-filled label file. The agent reads each sheet and fills `P/labels/<id>_<start>.json` (vocabulary:
+   `label_sheets.py vocab`; how: the docstring of label_sheets.py). Times stay as measured.
+   About 1.3 s per change point to build; about 1,000 change points per 2 hours of footage.
+   Then `python S/label_sheets.py check --labels P/labels` must report 0 problems.
+   On the first pack, free labels agreed with the paid pass on 10/11 event types and 10/11 graphic kinds.
+5. **(Paid option, only with the owner's yes)** `watch.py` sends the video to Gemini with exact stills per change
+   point. It refuses to run unless `--approved-usd` covers its printed estimate. Pilot one window and check it
+   on a `sheet.py` contact sheet before scaling.
+6. **Merge**: `python S/merge.py --raw P/labels --id <id> --transcript <t.json> --out P/events/<id>.json`
+   (use `--raw P/raw_v2` for the paid pass; both use the same schema).
 7. **Fingerprint**: `python S/stats.py --events P/events --cuts P/data --out P/fingerprint.json`.
 8. **Pass 2 specs**: `python S/deep_look.py --events P/events --sources P/source --out P/specs --per-kind 3`.
 8b. **Sound layer** (ARM, `venv-audio`: torch CPU + `demucs==4.0.1` + librosa): copy the original AAC out of each

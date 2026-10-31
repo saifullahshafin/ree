@@ -80,3 +80,12 @@ Each entry: what failed, why, what works. Verified on this machine unless marked
   `showspectrumpic`, read by eye) confirmed whoosh 4/6 and pop 0/6. The model hears a pop because a pop-in usually
   has one. Always verify SFX on spectrograms before writing a sound rule.
 - ffmpeg `drawtext` on the ARM VM fails silently without a font; pass `fontfile=` or label tiles locally with PIL.
+
+## Free labelling (label_sheets.py)
+- An agent that cannot watch or listen can still read motion and sound as images: a 6-frame strip from -0.3 to
+  +1 s shows how an element enters (on the first pack it revealed a two-stage move the stills hid: a pill pops in
+  as a lower third, then a card wipes in and the pill rides up to become its header), and a spectrogram strip
+  shows whooshes (broad swells) and pops (sharp vertical lines).
+- Spectrograms of the full mix are dominated by the voice; use the music+SFX stem from sound.py (`--audio`).
+- Sheets at 2 change points per row and 400 px frames stay readable after the image is downscaled for viewing
+  (1620 px wide for about 12 change points).

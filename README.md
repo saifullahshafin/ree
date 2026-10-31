@@ -20,7 +20,7 @@ transcripts, pixel and audio analysis) and models only label what happens at mea
 |---|---|---|
 | Change points | ffmpeg `scdet` + `cuts.py` | free |
 | Word timing | Parakeet (`hyperframes transcribe`) | free |
-| Labels | Claude on contact sheets (`sheet.py`), or Gemini on Vertex (`watch.py`, asks first) | free / about $0.31 per 150 s |
+| Labels | the agent reads `label_sheets.py` sheets (before/after frames, motion strip, spectrogram per change point), or Gemini on Vertex (`watch.py`, asks first) | free / about $0.31 per 150 s |
 | Motion specs | 10 fps frame strips, or Gemini (`deep_look.py`, asks first) | free / about $0.07 each |
 | Grade and framing | `look.py` (OpenCV, YuNet) | free |
 | Sound | Demucs + librosa (`sound.py`, `sfx_events.py`) | free |
