@@ -89,3 +89,9 @@ Each entry: what failed, why, what works. Verified on this machine unless marked
 - Spectrograms of the full mix are dominated by the voice; use the music+SFX stem from sound.py (`--audio`).
 - Sheets at 2 change points per row and 400 px frames stay readable after the image is downscaled for viewing
   (1620 px wide for about 12 change points).
+- **Whole-video separation is the slowest step** (htdemucs about 1.3x real time on 3 ARM cores: 2+ hours for 2 hours
+  of footage). The style questions need only samples: loudness from ebur128 on the original (seconds), music share
+  and level from 20 random 10 s windows, SFX truth from short windows around labelled edits. `sound_quick.py` does
+  this in about 5 minutes per video.
+- Loudness can differ by video era: the first pack measured -15.7 and -16.6 LUFS on two videos and about -24 LUFS
+  on the other three. Report ranges per video, not one number.

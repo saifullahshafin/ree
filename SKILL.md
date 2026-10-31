@@ -68,7 +68,13 @@ downloaded files.
    (use `--raw P/raw_v2` for the paid pass; both use the same schema).
 7. **Fingerprint**: `python S/stats.py --events P/events --cuts P/data --out P/fingerprint.json`.
 8. **Pass 2 specs**: `python S/deep_look.py --events P/events --sources P/source --out P/specs --per-kind 3`.
-8b. **Sound layer** (ARM, `venv-audio`: torch CPU + `demucs==4.0.1` + librosa): copy the original AAC out of each
+8a. **Sound, fast pass (default):** `ffmpeg -i id.m4a -af ebur128 -f null -` for loudness (seconds), then
+   `python sound_quick.py --audio full/id.m4a --events events/id.json --out quick/id`: Demucs on 20 random 10 s
+   windows (music share, bed level, voice-over-bed gap) and on short windows around edits labelled whoosh, pop
+   or typing plus unlabelled controls, each rendered as a 2 s spectrogram with a red line at the edit. The agent
+   reads the spectrograms to confirm or reject each sound label. About 5 min per video on 3 ARM cores, instead
+   of hours. Run it under the memory cap.
+8b. **Sound layer, full (optional, slow)** (ARM, `venv-audio`: torch CPU + `demucs==4.0.1` + librosa): copy the original AAC out of each
    video without re-encoding (`ffmpeg -i v.mp4 -vn -c:a copy id.m4a`), upload, then
    `python sound.py --audio full/id.m4a --words out/id/transcript.json --work sep --out sound/id.json`.
    Gives integrated LUFS, music segments with tempo and ducking depth, timbre change points, and every SFX transient
