@@ -80,6 +80,7 @@ def build(pack, creator):
         offs = [r["peak_offset_ms"] for v in sx_all for r in v["events"] if r["sfx_measured"] and r["gemini_audio"].startswith("sfx")]
         D["sfx_offsets"] = offs
     D["mix"] = {k: {"lufs": v["integrated_lufs"], "lra": v["loudness_range_lu"], "music": v["music_share"],
+                    "vob": v.get("voice_over_bed_db"),
                     "duck": sorted(m["duck_db"] for m in v["music_segments"] if m["duck_db"] is not None)[len([m for m in v["music_segments"] if m["duck_db"] is not None]) // 2]
                     if any(m["duck_db"] is not None for m in v["music_segments"]) else None,
                     "bpm": [m["tempo_bpm"] for m in v["music_segments"] if m["tempo_bpm"]]}

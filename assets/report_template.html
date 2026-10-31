@@ -374,10 +374,11 @@ const gcol = (layout) => G(GROUP_OF[layout] ?? 5);
     if (rows.length) p.append($(hbars(rows, { max: 100, fmt: (v) => v.toFixed(0) + '%', labelW: 130 })));
     const M = Object.values(D.mix || {});
     if (M.length) {
-      p.append($(`<p class="cap">Mix measured on ${M.length} of ${D.videos.length} videos so far.</p>`));
-      const avg = (f) => (M.reduce((a, m) => a + (f(m) ?? 0), 0) / M.length);
-      const off = (D.sfx_offsets || []).slice().sort((a, b) => a - b);
-      p.append($(`<div class="stats"><div class="stat"><b>${avg(m => m.lufs).toFixed(1)}</b><span>LUFS mix</span></div><div class="stat"><b>${(100 * avg(m => m.music)).toFixed(0)}%</b><span>runtime with music</span></div><div class="stat"><b>${avg(m => m.duck).toFixed(1)} dB</b><span>music ducks under voice</span></div>${off.length ? `<div class="stat"><b>${off[off.length >> 1]} ms</b><span>sfx peak vs visual</span></div>` : ''}</div>`));
+      p.append($(`<p class="cap">Mix measured on ${M.length} of ${D.videos.length} videos.</p>`));
+      const rng = (f) => { const v = M.map(f).filter(x => x != null); return v.length ? [Math.min(...v), Math.max(...v)] : null; };
+      const fmt = (r, d = 0, u = '') => r ? (r[0].toFixed(d) === r[1].toFixed(d) ? r[0].toFixed(d) : `${r[0].toFixed(d)} to ${r[1].toFixed(d)}`) + u : '-';
+      const mus = rng(m => m.music), vob = rng(m => m.vob);
+      p.append($(`<div class="stats"><div class="stat"><b>${fmt(rng(m => m.lufs), 1)}</b><span>LUFS by video</span></div><div class="stat"><b>${mus ? fmt([100 * mus[0], 100 * mus[1]], 0, '%') : '-'}</b><span>runtime with music</span></div><div class="stat"><b>${fmt(vob, 0, ' dB')}</b><span>voice above music</span></div></div>`));
     }
   }
   grid.append(p);
