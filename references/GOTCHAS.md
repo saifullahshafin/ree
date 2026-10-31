@@ -95,3 +95,13 @@ Each entry: what failed, why, what works. Verified on this machine unless marked
   this in about 5 minutes per video.
 - Loudness can differ by video era: the first pack measured -15.7 and -16.6 LUFS on two videos and about -24 LUFS
   on the other three. Report ranges per video, not one number.
+
+## Learned on the Saqlain Khan pack (Hindi, 2026-10-31)
+- **Non-English speech:** Parakeet is English only and local Whisper is not allowed. Golden path: Gemini text through AGY (one pass per 2-min piece, ~90 s each; tell it NOT to split the file, or it chunks into 10 s pieces and times out), then put the words on YouTube auto-caption word times (`json3` has per-word `tOffsetMs`). Gemini's own timestamps drift 8-15 s per 2 min: never use them. Tools: `scripts/agy_transcribe.py`, `scripts/align_words.py`, `scripts/json3_to_words.py`.
+- `patterns.py` used an a-z-only normaliser, so non-Latin words vanished silently (fixed: `norm()`). `stats.py` fillers are English-only (`uh/um/erm`), and caption-based word times have no gaps, so pause and filler numbers are invalid for caption transcripts: do not report them.
+- `label_sheets.py make` crashes when the last change point is within ~1 s of the end (AFTER frame past EOF). Drop such points first.
+- Do not run the scripts with `python -I`: it hides user site-packages (Pillow) and the scripts import each other (`schema`). Run plain `python` from the pack folder (no .py files at its root).
+- **Overlays that appear mid-shot have no change point,** so labellers attach them to the cut where they LEAVE and describe the BEFORE frame (seen: kinetic text 14/27, diagrams 16/47). Their counts are fine; their timing and spoken lead-ins are not. Measure entrances with a 5 fps strip of the whole shot before the cut.
+- **Measured layout check:** if the presenter's set has a distinctive colour (red lamp + neon here), the colour share on the frame at t_start+0.5 s flags mislabelled host/non-host events cheaply (`scripts/host_check.py`); confirm flagged frames visually (here 44 of 1,211 fixed).
+- `sudo -n systemd-run --scope` drops the caller's environment, so `TORCH_HOME`/`XDG_CACHE_HOME` are lost and Demucs downloads to `~/.cache` on the ARM root disk. `~/.cache/torch` is now a symlink to `/mnt/data/video-studio/cache/torch`; keep it that way.
+- Labeller vocabulary drifts between parallel agents (staged vs stock B-roll, vignette, highlight, true_3d). Only state rules for kinds seen in 2+ videos.

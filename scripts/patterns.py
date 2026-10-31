@@ -13,6 +13,12 @@ import statistics as st
 from collections import Counter, defaultdict
 
 STOP = set("the a an and to of i it is that you in this for on so be as we with my me are was have like just".split())
+STOP |= set("है हैं था थे थी के की का में और तो से को ये यह वो वह कि एक भी नहीं पर ही जो हम आप मैं इस उस कर".split())  # Hindi packs
+
+
+def norm(text):
+    # Strip punctuation only, so non-Latin words (Hindi etc.) keep their letters and vowel signs.
+    return re.sub(r"[\s.,!?\"'“”‘’()\[\]{}:;।॥…\-–—]", "", text.lower())
 
 
 def med(xs):
@@ -36,7 +42,7 @@ def main():
         dur = d["windows"][-1]["end"]
         words = json.load(open(os.path.join(a.transcripts, d["id"] + ".json"), encoding="utf-8"))
         for w in words:
-            t = re.sub(r"[^a-z0-9$%']", "", w["text"].lower())
+            t = norm(w["text"])
             if t and t not in STOP:
                 base[t] += 1
         counts = [0] * 10
@@ -49,7 +55,7 @@ def main():
                 n_graphics += 1
                 for w in words:
                     if e["t_start"] - 2 <= w["start"] < e["t_start"]:
-                        t = re.sub(r"[^a-z0-9$%']", "", w["text"].lower())
+                        t = norm(w["text"])
                         if t and t not in STOP:
                             lead[t] += 1
         prev = None

@@ -92,6 +92,12 @@ downloaded files.
 8c. **Look layer** (laptop): `python S/look.py --events P/events --sources P/source --out P/look.json`:
    grade per layout (luma, contrast, black and white points, saturation, warmth, tint) and framing from YuNet
    face boxes (face size and position, real punch-in scale).
+8d. **In-shot motion pass** (laptop, free): `python S/inshot_motion.py --video <mp4> --cuts <id>_cuts3.json
+   --transcript <t.json> --events P/events/<id>.json --out P/motion/<id>.json`. Reads every frame at 10 fps and
+   measures what moves INSIDE shots, which change points cannot see: head tilt/turn/nod of the main face (YuNet
+   landmarks; swings per second, degrees, speaking vs silent), camera push-in/pull-out/pan/shake, mid-shot pop-in
+   candidates (face area masked), brightness flashes. About 0.4x real time. Pop-ins are candidates: check a few
+   on 5 fps strips before writing a rule. Calibrate the head-tilt noise floor on shots that are still photos.
 9. **Verify** a stratified sample of the merged events and of the specs on contact sheets. Record the
    accuracy you saw (n checked, n wrong, what kind of wrong) in the pack's README.
 10. **Synthesise** the pack (structure below) with `references/STYLE_BIBLE_RUBRIC.md`.

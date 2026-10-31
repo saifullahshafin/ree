@@ -8,7 +8,13 @@ a count, rebuild recipes, trigger -> action edit rules, and a visual HTML report
 
 Inspired by [REA](https://github.com/morluto/rea) ("Reverse Engineer Anything"), which does this for software;
 REE does it for video editing. It is an independent project, not part of REA. A repeatable method, not a one-off
-analysis. First pack: Ali Abdaal (5 videos, 125 min, 976 measured edits).
+analysis. Packs so far: Ali Abdaal (5 videos, 125 min, 976 measured edits) and Saqlain Khan (Hindi documentaries,
+4 videos, 88 min, 1,211 measured edits).
+
+> **Status: actively developed.** REE is built and improved continuously: every new creator pack exposes a gap,
+> the fix goes back into the method, and the lessons go into `references/GOTCHAS.md`. Expect frequent updates.
+> Recent additions: in-shot motion pass (head tilt, camera push-ins, mid-shot pop-ins on every frame), non-English
+> transcripts (Gemini text on YouTube caption word timings), script-neutral trigger words, a measured host-shot check.
 
 ## Why it works
 Video models describe well but time badly: in testing, model timestamps drifted up to 10 s and followed the
@@ -23,6 +29,7 @@ transcripts, pixel and audio analysis) and models only label what happens at mea
 | Labels | the agent reads `label_sheets.py` sheets (before/after frames, motion strip, spectrogram per change point), or Gemini on Vertex (`watch.py`, asks first) | free / about $0.31 per 150 s |
 | Motion specs | 10 fps frame strips, or Gemini (`deep_look.py`, asks first) | free / about $0.07 each |
 | Grade and framing | `look.py` (OpenCV, YuNet) | free |
+| Motion inside shots | `inshot_motion.py`: every frame at 10 fps; head tilt/turn/nod, camera push-in/pan/shake, mid-shot pop-ins | free |
 | Sound | Demucs + librosa (`sound.py`, `sfx_events.py`) | free |
 | Stats and rules | `merge.py`, `stats.py`, `patterns.py` | free |
 | Report | `report.py` -> one HTML page | free |
