@@ -1,0 +1,394 @@
+<title>__CREATOR__ Edit DNA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an edit-bay log. Timeline strips are the hero; findings sit below in a two-column panel grid. */
+:root{
+  --bg:#f6f7f8; --panel:#ffffff; --ink:#15171c; --ink-2:#4b505a; --ink-3:#7d828c; --line:#dfe2e7; --track:#eceef1;
+  --accent:#2a78d6;
+  --g0:#2a78d6; --g1:#eb6834; --g2:#1baf7a; --g3:#eda100; --g4:#e87ba4; --g5:#6250d6;
+  --good:#0ca30c; --warn:#c98500; --bad:#d03b3b;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --bg:#17181b; --panel:#1e2024; --ink:#eef0f3; --ink-2:#b4b9c2; --ink-3:#868b95; --line:#30333a; --track:#272a30;
+  --accent:#3987e5; --g0:#3987e5; --g1:#d95926; --g2:#199e70; --g3:#c98500; --g4:#d55181; --g5:#9085e9;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --bg:#17181b; --panel:#1e2024; --ink:#eef0f3; --ink-2:#b4b9c2; --ink-3:#868b95; --line:#30333a; --track:#272a30;
+  --accent:#3987e5; --g0:#3987e5; --g1:#d95926; --g2:#199e70; --g3:#c98500; --g4:#d55181; --g5:#9085e9;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font:700 clamp(32px,5vw,56px)/1 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h2{font:600 13px/1.2 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2);margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px}
+.stats{display:flex;flex-wrap:wrap;gap:8px 28px}
+.stat b{display:block;font:500 26px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.cap{color:var(--ink-3);font-size:13px;margin:0;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.span2{grid-column:1/-1}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+@media (max-width:820px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.step{border-top:3px solid var(--accent);padding-top:8px;display:flex;flex-direction:column;gap:2px;font-size:13px}
+.step b{font-size:14px}
+.chip{display:inline-block;font:500 11px/1 var(--f-mono);padding:4px 6px;border-radius:4px;background:var(--track);color:var(--ink-2);width:max-content}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tl{display:flex;flex-direction:column;gap:14px}
+.tl-row{display:flex;flex-direction:column;gap:4px}
+.tl-title{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-2)}
+.tl-title b{color:var(--ink);font-weight:600}
+.scroll{overflow-x:auto}
+svg{display:block;max-width:100%;height:auto}
+svg text{fill:var(--ink-3);font:11px var(--f-mono)}
+svg .lab{fill:var(--ink-2);font:12px var(--f-body)}
+svg .val{fill:var(--ink);font:500 12px var(--f-mono)}
+.rules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+@media (max-width:820px){.rules{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rule{background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.rule b{font:700 30px/1 var(--f-display);font-variant-numeric:tabular-nums;color:var(--accent)}
+.rule span{font-size:13px;color:var(--ink-2);text-wrap:pretty}
+.pending{color:var(--ink-3);font:13px var(--f-mono);padding:24px 0}
+.swatches{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sw{border-radius:8px;min-height:120px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;font:12px var(--f-mono);border:1px solid var(--line)}
+.pal{display:flex;flex-direction:column;gap:6px}
+.pal-row{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;font-size:12px;color:var(--ink-2)}
+.pal-row div{display:flex;height:18px;border-radius:3px;overflow:hidden;border:1px solid var(--line)}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font:12px/1.4 var(--f-body);padding:6px 9px;border-radius:6px;max-width:280px;z-index:20;opacity:0;transition:opacity .1s}
+@media (prefers-reduced-motion:reduce){#tip{transition:none}}
+</style>
+<div class="wrap" id="app"></div>
+<div id="tip" role="tooltip"></div>
+<script>
+const D = /*__DATA__*/null;
+const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const G = (i) => `var(--g${i})`;
+const tc = (s) => { s = Math.max(0, s); const m = Math.floor(s / 60), x = Math.floor(s % 60); return `${String(m).padStart(2,'0')}:${String(x).padStart(2,'0')}`; };
+const pretty = (k) => String(k).replace(/_/g, ' ').replace(/\bpip\b/i, 'PIP').replace(/^./, c => c.toUpperCase());
+const tip = document.getElementById('tip');
+document.addEventListener('pointermove', (e) => {
+  const el = e.target.closest('[data-tip]');
+  if (!el) { tip.style.opacity = 0; return; }
+  tip.innerHTML = el.dataset.tip; tip.style.opacity = 1;
+  const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8);
+  tip.style.left = x + 'px'; tip.style.top = (e.clientY + 16) + 'px';
+});
+function panel(title, cap, cls = '') {
+  const p = $(`<section class="panel ${cls}"><h2>${esc(title)}</h2>${cap ? `<p class="cap">${esc(cap)}</p>` : ''}</section>`);
+  return p;
+}
+function pending(p, what) { p.append($(`<div class="pending">${esc(what)} pending</div>`)); return p; }
+
+/* horizontal bars: rows [{label, value, color?, note?, tip?}] */
+function hbars(rows, { w = 520, max, fmt = (v) => v, labelW = 170, color = 'var(--accent)' } = {}) {
+  const rh = 24, h = rows.length * rh + 4, M = max ?? Math.max(...rows.map(r => r.value), 1);
+  const bw = w - labelW - 70;
+  let s = `<svg viewBox="0 0 ${w} ${h}" role="img">`;
+  rows.forEach((r, i) => {
+    const y = i * rh + 4, len = Math.max(2, bw * r.value / M);
+    s += `<g data-tip="${esc(r.tip ?? `${r.label}: ${fmt(r.value)}`)}">
+      <rect x="0" y="${y}" width="${w}" height="${rh - 2}" fill="transparent"/>
+      <text class="lab" x="${labelW - 8}" y="${y + 15}" text-anchor="end">${esc(r.label)}</text>
+      <rect x="${labelW}" y="${y + 4}" width="${bw}" height="${rh - 10}" rx="3" fill="var(--track)"/>
+      <rect x="${labelW}" y="${y + 4}" width="${len}" height="${rh - 10}" rx="3" fill="${r.color ?? color}"/>
+      <text class="val" x="${labelW + len + 6}" y="${y + 15}">${esc(fmt(r.value))}${r.note ? `<tspan fill="var(--ink-3)"> ${esc(r.note)}</tspan>` : ''}</text></g>`;
+  });
+  return s + '</svg>';
+}
+
+/* line over evenly spaced points */
+function line(vals, { w = 520, h = 190, xl = [], yfmt = (v) => v, mark } = {}) {
+  const L = 36, R = 12, T = 14, B = 26, max = Math.max(...vals) * 1.15, n = vals.length;
+  const X = (i) => L + (w - L - R) * i / (n - 1), Y = (v) => T + (h - T - B) * (1 - v / max);
+  let s = `<svg viewBox="0 0 ${w} ${h}" role="img">`;
+  [0, max / 2, max].forEach(v => s += `<line x1="${L}" x2="${w - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${yfmt(v)}</text>`);
+  const pts = vals.map((v, i) => `${X(i)},${Y(v)}`).join(' ');
+  s += `<polygon points="${L},${Y(0)} ${pts} ${X(n - 1)},${Y(0)}" fill="var(--accent)" opacity=".12"/>`;
+  s += `<polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  vals.forEach((v, i) => s += `<g data-tip="${esc(xl[i] ?? i)}: ${yfmt(v)} edits/min"><circle cx="${X(i)}" cy="${Y(v)}" r="10" fill="transparent"/><circle cx="${X(i)}" cy="${Y(v)}" r="${i === mark ? 5 : 3.5}" fill="var(--accent)" stroke="var(--panel)" stroke-width="2"/></g>`);
+  xl.forEach((t, i) => s += `<text x="${X(i)}" y="${h - 8}" text-anchor="middle">${esc(t)}</text>`);
+  return s + '</svg>';
+}
+
+/* range dots: rows [{label, p25, med, p75, color}] on one shared axis */
+function ranges(rows, { w = 520, unit = 's', labelW = 170 } = {}) {
+  const rh = 26, h = rows.length * rh + 26, max = Math.max(...rows.map(r => r.p75)) * 1.08, bw = w - labelW - 20;
+  const X = (v) => labelW + bw * v / max;
+  let s = `<svg viewBox="0 0 ${w} ${h}" role="img">`;
+  const step = max > 40 ? 10 : 5;
+  for (let v = 0; v <= max; v += step) s += `<line x1="${X(v)}" x2="${X(v)}" y1="0" y2="${h - 20}" stroke="var(--line)"/><text x="${X(v)}" y="${h - 6}" text-anchor="middle">${v}${unit}</text>`;
+  rows.forEach((r, i) => {
+    const y = i * rh + 13;
+    s += `<g data-tip="${esc(r.label)}: median ${r.med}${unit} (middle half ${r.p25} to ${r.p75}${unit})">
+      <rect x="0" y="${y - 12}" width="${w}" height="${rh}" fill="transparent"/>
+      <text class="lab" x="${labelW - 8}" y="${y + 4}" text-anchor="end">${esc(r.label)}</text>
+      <line x1="${X(r.p25)}" x2="${X(r.p75)}" y1="${y}" y2="${y}" stroke="${r.color}" stroke-width="6" stroke-linecap="round" opacity=".45"/>
+      <circle cx="${X(r.med)}" cy="${y}" r="6" fill="${r.color}" stroke="var(--panel)" stroke-width="2"/></g>`;
+  });
+  return s + '</svg>';
+}
+
+/* 100% stacked bar with direct labels for the big segments */
+function stack(parts, { w = 1100, h = 44 } = {}) {
+  const tot = parts.reduce((a, p) => a + p.value, 0); let x = 0, s = `<svg viewBox="0 0 ${w} ${h}" role="img">`;
+  parts.forEach(p => {
+    const pw = w * p.value / tot;
+    s += `<g data-tip="${esc(p.label)}: ${(100 * p.value / tot).toFixed(1)}% of screen time"><rect x="${x + 1}" y="0" width="${Math.max(1, pw - 2)}" height="${h - 16}" rx="3" fill="${p.color}"/>`;
+    if (pw > 70) s += `<text class="val" x="${x + 6}" y="${h - 2}">${(100 * p.value / tot).toFixed(0)}%</text>`;
+    s += '</g>'; x += pw;
+  });
+  return s + '</svg>';
+}
+const app = document.getElementById('app');
+const fp = D.fp, pat = D.pat, run = D.run || {};
+
+/* header */
+{
+  const mins = fp ? fp.total_minutes : D.videos.reduce((a, v) => a + v.min, 0);
+  const s = [[D.videos.length, 'videos'], [mins, 'minutes watched'], [fp ? fp.events_total : '-', 'measured edits'],
+             [run.cost_usd != null ? '$' + run.cost_usd : '-', 'model cost'], [run.claude_frames ?? '-', 'frames Claude checked']];
+  app.append($(`<header class="head"><div><div class="chip">EDIT STYLE REVERSE ENGINEER</div><h1 style="margin-top:10px">${esc(D.creator)} Edit DNA</h1></div>
+    <div class="stats">${s.map(([v, l]) => `<div class="stat"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('')}</div></header>`));
+}
+
+/* signature rules: each number computed from the pack */
+if (fp && pat) {
+  const V = Object.values(fp.videos), med = (a) => { a = a.slice().sort((x, y) => x - y); return a[a.length >> 1]; };
+  const share = (k) => Object.entries(fp.layout_time_share).filter(([l]) => l === k).reduce((a, [, v]) => a + v, 0);
+  const tIn = pat.layout_transitions.find(t => t.transition === 'talking_head_medium -> pip_over_graphic');
+  const exIn = tIn ? Math.round(100 * (tIn.talk_beats.example || 0) / tIn.count) : null;
+  const dim = Object.fromEntries(fp.dimension), en = pat.energy_vs_edit;
+  const R = [
+    [`${Math.round(100 * share('pip_over_graphic'))}%`, 'of screen time he is a small picture-in-picture beside a graphic'],
+    [`${(fp.hook_events_first_60s_avg / fp.body_events_per_min_avg).toFixed(1)}×`, 'edit density in the first minute vs the rest'],
+    [`${fp.shot_length_s.median}s`, 'median shot, middle half 3 to 12 s'],
+    [`${med(V.map(v => v.speech.wpm))}`, 'words per minute; pauses cut to about a third of a second'],
+    [exIn != null ? `${exIn}%` : '-', 'of moves from face to PIP happen on an example ("show it")'],
+    (D.run.sfx_rule ? [D.run.sfx_rule.value, D.run.sfx_rule.text] : [`${fp.pop_total}`, 'pop-ins; sound check pending']),
+    [`${dim.true_3d ?? 0} / ${fp.events_total}`, 'edits use true 3D; the language is flat 2D'],
+    [en.emphatic && en.vulnerable ? `${en.emphatic.events_per_min} vs ${en.vulnerable.events_per_min}` : '-', 'edits / min when emphatic vs vulnerable: the edit goes quiet for feelings'],
+  ];
+  app.append($(`<section class="rules">${R.map(([n, t]) => `<div class="rule"><b>${esc(n)}</b><span>${esc(t)}</span></div>`).join('')}</section>`));
+}
+
+/* method flow */
+{
+  const steps = run.steps || [];
+  const p = panel('How it was measured', 'Times come from measurement, never from a model. Models only label what happens at measured moments.');
+  if (!steps.length) pending(p, 'run.json');
+  else p.append($(`<div class="flow">${steps.map(s => `<div class="step"><b>${esc(s.name)}</b><span class="chip">${esc(s.where)}</span><span class="mono" style="color:var(--ink-2)">${esc(s.stat)}</span><span style="color:var(--ink-3)">${esc(s.time)}</span></div>`).join('')}</div>`));
+  app.append(p);
+}
+
+/* timelines */
+{
+  const p = panel('Five videos, edit by edit', 'Band colour = what fills the screen. Ticks above = graphics on screen. Ticks below = sound effects confirmed by measurement. Grey line = music under the voice.');
+  p.append($(`<div class="legend">${D.groups.map((g, i) => `<span><i style="background:${G(i)}"></i>${esc(g)}</span>`).join('')}<span><i style="background:var(--ink-2)"></i>graphic</span><span><i style="background:var(--g1)"></i>sound effect</span></div>`));
+  const box = $('<div class="tl"></div>');
+  const maxDur = Math.max(...D.timelines.map(t => t.dur));
+  D.timelines.forEach(t => {
+    const W = 1100, wTrack = W * t.dur / maxDur, X = (s) => wTrack * s / t.dur, H = 70;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t.title)} timeline">`;
+    for (let m = 0; m <= t.dur / 60; m += 5) s += `<line x1="${X(m * 60)}" x2="${X(m * 60)}" y1="12" y2="46" stroke="var(--line)"/><text x="${X(m * 60) + 2}" y="${H - 2}">${m}m</text>`;
+    t.gfx.forEach(g => s += `<rect x="${X(g[0]) - .75}" y="2" width="1.5" height="9" fill="var(--ink-2)" data-tip="<b>${tc(g[0])}</b> ${esc(pretty(g[1]))}<br>${esc(g[2])}"/>`);
+    t.bands.forEach(b => s += `<rect x="${X(b[0])}" y="14" width="${Math.max(.8, X(b[1]) - X(b[0]) - .6)}" height="22" fill="${G(b[2])}" data-tip="<b>${tc(b[0])} to ${tc(b[1])}</b> ${esc(D.groups[b[2]])} (${(b[1] - b[0]).toFixed(1)} s)"/>`);
+    t.music.forEach(m => s += `<rect x="${X(m[0])}" y="39" width="${X(m[1]) - X(m[0])}" height="2" fill="var(--ink-3)" data-tip="Music ${tc(m[0])} to ${tc(m[1])}"/>`);
+    t.sfx.forEach(f => s += `<rect x="${X(f[0]) - .75}" y="43" width="1.5" height="9" fill="var(--g1)" data-tip="<b>${tc(f[0])}</b> sound effect: ${esc(f[1])}"/>`);
+    s += '</svg>';
+    box.append($(`<div class="tl-row"><div class="tl-title"><b>${esc(t.title)}</b><span class="mono">${t.gfx.length} graphics · ${t.sfx.length} sfx · ${(t.dur / 60).toFixed(1)} min</span></div><div class="scroll">${s}</div></div>`));
+  });
+  p.append(box); app.append(p);
+}
+const grid = $('<div class="grid"></div>'); app.append(grid);
+const GROUP_OF = { pip_over_graphic: 0, talking_head_medium: 1, talking_head_wide: 2, talking_head_close: 3, talking_head_punch_in: 3,
+  fullscreen_graphic: 4, title_card: 4 };
+const gcol = (layout) => G(GROUP_OF[layout] ?? 5);
+
+/* screen time share */
+{
+  const p = panel('Where the screen time goes', 'Share of total runtime in each screen state, all five videos.', 'span2');
+  if (!fp) pending(p, 'fingerprint');
+  else {
+    const acc = D.groups.map((g, i) => ({ label: g, value: 0, color: G(i) }));
+    Object.entries(fp.layout_time_share).forEach(([k, v]) => acc[GROUP_OF[k] ?? 5].value += v);
+    p.append($(`<div class="scroll">${stack(acc.filter(a => a.value > 0))}</div>`));
+    p.append($(`<div class="legend">${acc.map((a, i) => `<span><i style="background:${G(i)}"></i>${esc(a.label)} <b class="mono">${(100 * a.value).toFixed(0)}%</b></span>`).join('')}</div>`));
+  }
+  grid.append(p);
+}
+
+/* hold times */
+{
+  const p = panel('How long each state holds', 'Dot = median, bar = middle half of all holds.');
+  if (!pat) pending(p, 'patterns');
+  else {
+    const rows = Object.entries(pat.layout_hold_s).filter(([, v]) => v.n >= 5).sort((a, b) => b[1].median - a[1].median)
+      .map(([k, v]) => ({ label: pretty(k).replace('Talking head ', 'Face '), p25: v.p25, med: v.median, p75: v.p75, color: gcol(k) }));
+    p.append($(ranges(rows)));
+  }
+  grid.append(p);
+}
+
+/* pace curve */
+{
+  const p = panel('Pace across the video', 'Edits per minute in each tenth of the runtime. The opening runs hottest.');
+  if (!pat) pending(p, 'patterns');
+  else {
+    const v = pat.pace_curve_events_per_min_by_tenth;
+    p.append($(line(v, { xl: v.map((_, i) => `${i * 10}%`), yfmt: (x) => x.toFixed(0), mark: 0 })));
+    if (fp) p.append($(`<div class="stats"><div class="stat"><b>${fp.hook_events_first_60s_avg}</b><span>edits in first 60 s</span></div><div class="stat"><b>${fp.body_events_per_min_avg}</b><span>edits / min after</span></div><div class="stat"><b>${fp.shot_length_s.median}s</b><span>median shot</span></div></div>`));
+  }
+  grid.append(p);
+}
+
+/* switch triggers */
+{
+  const p = panel('What triggers a screen switch', 'Most common switches, and what he is doing when they happen.', 'span2');
+  if (!pat) pending(p, 'patterns');
+  else {
+    const T = pat.layout_transitions.slice(0, 8);
+    const max = Math.max(...T.map(t => t.count));
+    const rows = T.map(t => {
+      const [a, b] = t.transition.split(' -> ');
+      const beats = Object.entries(t.talk_beats), bt = beats.reduce((s, [, n]) => s + n, 0);
+      return `<div class="pal-row" style="grid-template-columns:minmax(0,260px) 60px 1fr" data-tip="${esc(beats.map(([k, n]) => `${pretty(k)} ${n}`).join(' · '))}">
+        <span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${gcol(a)}"></i> ${esc(pretty(a).replace('Talking head ', 'Face '))} → <i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${gcol(b)}"></i> ${esc(pretty(b).replace('Talking head ', 'Face '))}</span>
+        <span class="mono" style="color:var(--ink)">${t.count}×</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap">${beats.slice(0, 3).map(([k, n]) => `<span class="chip">${esc(pretty(k))} ${Math.round(100 * n / bt)}%</span>`).join('')}</span></div>`;
+    }).join('');
+    p.append($(`<div class="pal">${rows}</div>`));
+  }
+  grid.append(p);
+}
+
+/* energy vs density */
+{
+  const p = panel('His energy sets the edit density', 'Edits per minute while he speaks in each register.');
+  if (!pat) pending(p, 'patterns');
+  else {
+    const rows = Object.entries(pat.energy_vs_edit).filter(([, v]) => v.events_per_min).sort((a, b) => b[1].events_per_min - a[1].events_per_min)
+      .map(([k, v]) => ({ label: pretty(k), value: v.events_per_min, tip: `${pretty(k)}: ${v.events_per_min}/min · ${Object.entries(v.mix).slice(0, 3).map(([a, n]) => `${pretty(a)} ${n}`).join(', ')}` }));
+    p.append($(hbars(rows, { fmt: (v) => v.toFixed(1), labelW: 110 })));
+  }
+  grid.append(p);
+}
+/* graphics vocabulary */
+{
+  const p = panel('Graphic vocabulary', 'Every graphic kind seen at a measured moment.');
+  if (!fp) pending(p, 'fingerprint');
+  else {
+    const rows = fp.graphic_kind.filter(([k]) => k !== 'none').slice(0, 14).map(([k, n]) => ({ label: pretty(k), value: n, color: k === '3d_object_or_scene' ? 'var(--g1)' : 'var(--accent)' }));
+    p.append($(hbars(rows, { labelW: 190 })));
+    const dim = Object.fromEntries(fp.dimension);
+    p.append($(`<div class="stats"><div class="stat"><b>${dim.flat_2d ?? 0}</b><span>flat 2D</span></div><div class="stat"><b>${dim.parallax_2_5d ?? 0}</b><span>2.5D</span></div><div class="stat"><b>${dim.true_3d ?? 0}</b><span>true 3D</span></div></div>`));
+  }
+  grid.append(p);
+}
+
+/* motion */
+{
+  const p = panel('How things move in', 'Entrance motion of every measured edit.');
+  if (!fp) pending(p, 'fingerprint');
+  else {
+    const rows = fp.motion_in.filter(([k]) => k !== 'none').map(([k, n]) => ({ label: pretty(k), value: n }));
+    p.append($(hbars(rows, { labelW: 130 })));
+    p.append($(`<div class="stats"><div class="stat"><b>${fp.pop_total}</b><span>pop-ins</span></div><div class="stat"><b>${(Object.fromEntries(fp.event_type).transition_effect ?? 0)}</b><span>fancy transitions</span></div></div>`));
+  }
+  grid.append(p);
+}
+
+/* look */
+{
+  const p = panel('The look', 'Measured average colour and grade of face shots vs graphic screens.');
+  const L = D.look;
+  if (!L) pending(p, 'look');
+  else {
+    const g = L.grade_by_layout, c = L.mean_color_by_layout || {};
+    const card = (k, name) => g[k] ? `<div class="sw" style="background:${c[k] || 'var(--track)'};color:${g[k].luma.median > .55 ? '#15171c' : '#f3f4f6'}">
+      <b style="font:600 14px var(--f-body)">${name}</b><span>brightness ${g[k].luma.median.toFixed(2)}</span><span>warmth R/B ${g[k].warmth_r_over_b.median.toFixed(2)}</span><span>saturation ${g[k].saturation.median.toFixed(2)}</span><span>${c[k] || ''}</span></div>` : '';
+    p.append($(`<div class="swatches">${card('talking_head_medium', 'Face shots')}${card('pip_over_graphic', 'PIP / graphics')}</div>`));
+    const fr = L.framing_by_layout, scale = L.punch_in_scale_vs_medium || {};
+    if (fr && fr.talking_head_medium) {
+      const W = 320, H = 180;
+      let s = `<svg viewBox="0 0 ${W} ${H + 18}" role="img" style="max-width:420px"><rect x="0" y="0" width="${W}" height="${H}" fill="var(--track)" rx="4"/>`;
+      [W / 3, 2 * W / 3].forEach(x => s += `<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="var(--line)"/>`);
+      [H / 3, 2 * H / 3].forEach(y => s += `<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)"/>`);
+      ['talking_head_wide', 'talking_head_medium', 'talking_head_close'].forEach(k => {
+        const f = fr[k]; if (!f) return;
+        const fh = H * f.face_h_pct.median / 100, cx = W * f.face_cx_pct.median / 100, cy = H * f.face_cy_pct.median / 100;
+        s += `<rect x="${cx - fh * .4}" y="${cy - fh / 2}" width="${fh * .8}" height="${fh}" rx="${fh * .35}" fill="none" stroke="${gcol(k)}" stroke-width="2" data-tip="${pretty(k).replace('Talking head ', 'Face ')}: face ${f.face_h_pct.median.toFixed(0)}% of frame height, centre at ${f.face_cx_pct.median.toFixed(0)}% / ${f.face_cy_pct.median.toFixed(0)}%"/>`;
+      });
+      s += `<text x="0" y="${H + 14}">face boxes on the 16:9 frame · thirds grid</text></svg>`;
+      p.append($(s));
+      p.append($(`<div class="stats">${Object.entries(scale).filter(([k]) => k !== 'talking_head_medium').map(([k, v]) => `<div class="stat"><b>${v.toFixed(2)}×</b><span>${esc(pretty(k).replace('Talking head ', 'face '))} vs medium</span></div>`).join('')}</div>`));
+    }
+  }
+  grid.append(p);
+}
+
+/* brand palettes */
+{
+  const p = panel('Graphic palettes', 'Colours measured from the frame of each studied graphic.');
+  if (!D.specs.length) pending(p, 'motion specs');
+  else {
+    const seen = {};
+    const rows = D.specs.filter(s => (seen[s.kind] = (seen[s.kind] || 0) + 1) <= 1).map(s =>
+      `<div class="pal-row" data-tip="${esc(s.entrance)}"><span>${esc(pretty(s.kind))}</span><div>${s.pal.map(c => `<span style="flex:${c.share};background:${c.hex}" data-tip="${c.hex} · ${(c.share * 100).toFixed(0)}%"></span>`).join('')}</div></div>`).join('');
+    p.append($(`<div class="pal">${rows}</div>`));
+  }
+  grid.append(p);
+}
+
+/* speech */
+{
+  const p = panel('Speech edit', 'Words per minute and the longest pause left in, per video.');
+  if (!fp) pending(p, 'fingerprint');
+  else {
+    const V = Object.entries(fp.videos), title = (id) => (D.videos.find(v => v.id === id) || {}).title || id;
+    p.append($(hbars(V.map(([id, v]) => ({ label: title(id).slice(0, 26), value: v.speech.wpm, tip: `${title(id)}: ${v.speech.wpm} wpm` })), { labelW: 190, fmt: (v) => v + ' wpm' })));
+    p.append($(hbars(V.map(([id, v]) => ({ label: title(id).slice(0, 26), value: v.speech.pause_p90_s, color: 'var(--g2)', tip: `pauses: median ${v.speech.pause_median_s}s, 90% under ${v.speech.pause_p90_s}s, longest ${v.speech.pause_max_s}s, fillers ${v.speech.fillers_per_min}/min` })), { labelW: 190, fmt: (v) => v + ' s' })));
+    p.append($(`<p class="cap">Green: 90% of pauses left in are shorter than this.</p>`));
+  }
+  grid.append(p);
+}
+
+/* sound */
+{
+  const p = panel('Sound design', 'Each bar: share of edits whose sound rise beats 90% of random moments. Labels are what Gemini heard.');
+  if (!D.sfx_check && !Object.keys(D.mix || {}).length) pending(p, 'sound layer');
+  else {
+    if (!D.sfx_check) pending(p, 'sound effect test');
+    const rows = Object.entries(D.sfx_check || {}).filter(([, v]) => v.n >= 5).sort((a, b) => b[1].share - a[1].share)
+      .map(([k, v]) => ({ label: k === 'none' ? 'no sound heard' : pretty(k.replace('sfx_', '')), value: v.share * 100, color: k === 'none' ? 'var(--ink-3)' : 'var(--g1)', tip: `${k}: ${v.n} edits, median rise ${v.rise} dB`, note: `n=${v.n}` }));
+    if (rows.length) p.append($(hbars(rows, { max: 100, fmt: (v) => v.toFixed(0) + '%', labelW: 130 })));
+    const M = Object.values(D.mix || {});
+    if (M.length) {
+      p.append($(`<p class="cap">Mix measured on ${M.length} of ${D.videos.length} videos so far.</p>`));
+      const avg = (f) => (M.reduce((a, m) => a + (f(m) ?? 0), 0) / M.length);
+      const off = (D.sfx_offsets || []).slice().sort((a, b) => a - b);
+      p.append($(`<div class="stats"><div class="stat"><b>${avg(m => m.lufs).toFixed(1)}</b><span>LUFS mix</span></div><div class="stat"><b>${(100 * avg(m => m.music)).toFixed(0)}%</b><span>runtime with music</span></div><div class="stat"><b>${avg(m => m.duck).toFixed(1)} dB</b><span>music ducks under voice</span></div>${off.length ? `<div class="stat"><b>${off[off.length >> 1]} ms</b><span>sfx peak vs visual</span></div>` : ''}</div>`));
+    }
+  }
+  grid.append(p);
+}
+
+/* verification */
+{
+  const p = panel('How much to trust it', 'Labels checked by eye against exact frames.');
+  const V = D.verify;
+  if (!V) pending(p, 'verification');
+  else p.append($(hbars(V.map(v => ({ label: v.label, value: 100 * v.right / v.n, note: `${v.right}/${v.n}`, color: v.right / v.n >= .85 ? 'var(--good)' : v.right / v.n >= .6 ? 'var(--warn)' : 'var(--bad)' })), { max: 100, fmt: (v) => v.toFixed(0) + '%', labelW: 210 })));
+  grid.append(p);
+}
+</script>
